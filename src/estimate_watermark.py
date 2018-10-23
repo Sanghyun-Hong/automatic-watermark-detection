@@ -33,17 +33,18 @@ def estimate_watermark(foldername):
 	print("Computing gradients.")
 	gradx = map(lambda x: cv2.Sobel(x, cv2.CV_64F, 1, 0, ksize=KERNEL_SIZE), images)
 	grady = map(lambda x: cv2.Sobel(x, cv2.CV_64F, 0, 1, ksize=KERNEL_SIZE), images)
+	gradx, grady = list(gradx), list(grady)
 
 	# Compute median of grads
 	print("Computing median gradients.")
-	Wm_x = np.median(np.array(gradx), axis=0) 					
+	Wm_x = np.median(np.array(gradx), axis=0)
 	Wm_y = np.median(np.array(grady), axis=0)
 
 	return (Wm_x, Wm_y, gradx, grady)
 
 
 def PlotImage(image):
-	""" 
+	"""
 	PlotImage: Give a normalized image matrix which can be used with implot, etc.
 	Maps to [0, 1]
 	"""
@@ -91,10 +92,10 @@ def poisson_reconstruct2(gradx, grady, boundarysrc):
 	return result
 
 
-def poisson_reconstruct(gradx, grady, kernel_size=KERNEL_SIZE, num_iters=100, h=0.1, 
+def poisson_reconstruct(gradx, grady, kernel_size=KERNEL_SIZE, num_iters=100, h=0.1,
 		boundary_image=None, boundary_zero=True):
 	"""
-	Iterative algorithm for Poisson reconstruction. 
+	Iterative algorithm for Poisson reconstruction.
 	Given the gradx and grady values, find laplacian, and solve for image
 	Also return the squared difference of every step.
 	h = convergence rate
@@ -114,7 +115,7 @@ def poisson_reconstruct(gradx, grady, kernel_size=KERNEL_SIZE, num_iters=100, h=
 	est[1:-1, 1:-1, :] = np.random.random((m-2, n-2, p))
 	loss = []
 
-	for i in xrange(num_iters):
+	for i in range(num_iters):
 		old_est = est.copy()
 		est[1:-1, 1:-1, :] = 0.25*(est[0:-2, 1:-1, :] + est[1:-1, 0:-2, :] + est[2:, 1:-1, :] + est[1:-1, 2:, :] - h*h*laplacian[1:-1, 1:-1, :])
 		error = np.sum(np.square(est-old_est))
@@ -154,7 +155,7 @@ def crop_watermark(gradx, grady, threshold=0.4, boundary_size=2):
 
 def normalized(img):
 	"""
-	Return the image between -1 to 1 so that its easier to find out things like 
+	Return the image between -1 to 1 so that its easier to find out things like
 	correlation between images, convolutionss, etc.
 	Currently required for Chamfer distance for template matching.
 	"""
@@ -176,7 +177,7 @@ def watermark_detector(img, gx, gy, thresh_low=200, thresh_high=220, printval=Fa
 	if printval:
 		print(index)
 
-	x,y = (index[0]-rect[0]/2), (index[1]-rect[1]/2)
+	x, y = int(index[0]-rect[0]/2), int(index[1]-rect[1]/2)
 	im = img.copy()
 	cv2.rectangle(im, (y, x), (y+rect[1], x+rect[0]), (255, 0, 0))
 	return (im, (x, y), (rect[0], rect[1]))

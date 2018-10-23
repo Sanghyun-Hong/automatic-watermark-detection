@@ -4,8 +4,8 @@ import os
 import scipy
 from scipy.sparse import *
 from scipy.sparse import linalg
-from estimate_watermark import *
-from closed_form_matting import *
+from src.estimate_watermark import *
+from src.closed_form_matting import *
 from numpy import nan, isnan
 
 def get_cropped_images(foldername, num_images, start, end, shape):
@@ -127,7 +127,7 @@ def estimate_normalized_alpha(J, W_m, num_images=30, threshold=170, invert=False
 
     print("Estimating normalized alpha using %d images."%(num_images))
     # for all images, calculate alpha
-    for idx in xrange(num_images):
+    for idx in range(num_images):
         imgcopy = thr
         alph = closed_form_matte(J[idx], imgcopy)
         alpha[idx] = alph
